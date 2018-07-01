@@ -10,10 +10,10 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/danieljyoo/funcmatic-core.git"
+    "url": "https://github.com/getfuncmatic/funcmatic.git"
   },
   "dependencies": {
-    "@funcmatic/lambda-router": "file:../../funcmatic-commons/lambda-router"
+    "@funcmatic/lambda-router": "^2.0.0-alpha"
   },
   "devDependencies": {
     "jest": "^21.2.1"
