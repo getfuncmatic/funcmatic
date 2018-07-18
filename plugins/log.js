@@ -2,7 +2,7 @@ const util = require('../lib/util')
 
 class LogPlugin {
   constructor() {
-    this.name = 'log-demo'
+    this.name = 'log'
   }
   
   async start(conf) {
@@ -10,8 +10,8 @@ class LogPlugin {
   }
 
   async request(event, context) {
-    context['log'] = this.log.bind(this)
-    return { event, context }
+    var service = this.log.bind(this)
+    return { service }
   }
   
   log(s) {

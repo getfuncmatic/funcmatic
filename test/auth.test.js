@@ -3,8 +3,8 @@ var AuthPlugin = require('../plugins/auth')
 
 const app = require('@funcmatic/lambda-router')
 
-app.get('/', async (event, context) => {
-  return { statusCode: 200, claims: context.auth.claims }
+app.get('/', async (event, context, { auth }) => {
+  return { statusCode: 200, claims: auth.claims }
 })  
 
 describe('Request', () => {

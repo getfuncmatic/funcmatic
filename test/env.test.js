@@ -6,14 +6,13 @@ describe('Request', () => {
     var conf = { }
     Funcmatic.use(EnvPlugin, conf)
     expect(EnvPlugin.env).toMatchObject({})
-    var handler = Funcmatic.wrap(async (event, { env }) => { 
+    var handler = Funcmatic.wrap(async (event, context, { env }) => { 
       return { 
         statusCode: 200, 
         env
       }
     })
     var ret = await handler({}, {})
-    console.log("ret", ret)
     expect(ret.env).toMatchObject({
       "VARIABLE_A": "value-a",
       "VARIABLE_B": "value-b"

@@ -3,8 +3,8 @@ var DatasourcePlugin = require('../plugins/datasource')
 
 const app = require('@funcmatic/lambda-router')
 
-app.get('/', async (event, context) => {
-  return { statusCode: 200, conn: context['datasource-demo'].conn }
+app.get('/', async (event, context, { datasource }) => {
+  return { statusCode: 200, conn: datasource.conn }
 }) 
 
 describe('Request', () => {

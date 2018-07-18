@@ -2,7 +2,7 @@ const util = require('../lib/util')
 
 class AuthPlugin {
   constructor() {
-    this.name = 'auth-demo'
+    this.name = 'auth'
   }
   
   async start(conf) {
@@ -12,8 +12,10 @@ class AuthPlugin {
   
   async request(event, context) {
     var claims = await this.auth(event.headers['Authorization'])
-    context['auth'] = { claims }
-    return { event, context }
+    //context['auth'] = { claims }
+    var service = { claims }
+    //return { event, context }
+    return { service }
   }
   
   async auth(token) {

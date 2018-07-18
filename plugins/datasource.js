@@ -3,7 +3,7 @@ const util = require('../lib/util')
 class DatasourcePlugin {
   
   constructor() {
-    this.name = 'datasource-demo'
+    this.name = 'datasource'
     this.cachedConnection = null
     this.cache = false
   }
@@ -16,8 +16,8 @@ class DatasourcePlugin {
   
   async request(event, context) {
     var conn = await this.connectToDatasource()
-    context[this.name] = { conn }
-    return { event, context }
+    var service = { conn }
+    return { service }
   }
   
   async response(event, context, res) {
@@ -25,7 +25,6 @@ class DatasourcePlugin {
       await this.disconnectFromDatasource()
       this.cachedConnection = null
     }
-    return res
   }
   
   async connectToDatasource() {

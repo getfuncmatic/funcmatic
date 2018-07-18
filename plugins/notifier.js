@@ -2,7 +2,7 @@ const util = require('../lib/util')
 
 class NotifierPlugin {
   constructor() {
-    this.name = 'notifier-demo'
+    this.name = 'notify'
   }
   
   async start(conf) {
@@ -10,8 +10,8 @@ class NotifierPlugin {
   }
 
   async request(event, context, services) {
-    context.notify = this.notify.bind(this)
-    return { event, context, services }
+    var service = this.notify.bind(this)
+    return { service }
   }
   
   async error(err, event, context, res) {

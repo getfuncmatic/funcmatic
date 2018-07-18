@@ -6,7 +6,7 @@ describe('Request', () => {
     await Funcmatic.use(NotifierPlugin, { })
     var event = { path: '/', method: 'GET', headers: { } }
     var context = { }
-    var handler = Funcmatic.wrap(async (event, context) => {
+    var handler = Funcmatic.wrap(async (event, context, { notify }) => {
       throw Error("User Error")
     })
     var error = null
@@ -19,7 +19,5 @@ describe('Request', () => {
     expect(error).toBeTruthy()
     expect(error.message).toBe("User Error")
     expect(NotifierPlugin.err).toMatchObject(error)
-    
-    console.log("RET", ret)
   })
 })

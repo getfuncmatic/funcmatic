@@ -2,7 +2,7 @@ const util = require('../lib/util')
 
 class EnvPlugin {
   constructor() {
-    this.name = 'env-demo'
+    this.name = 'env'
     this.env = { }
   }
   
@@ -19,8 +19,8 @@ class EnvPlugin {
   }
   
   async request(event, context) {
-    context['env'] = this.env
-    return { event, context }
+    var service = this.env
+    return { service }
   }
 }
 
