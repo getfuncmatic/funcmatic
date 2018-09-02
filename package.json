@@ -1,6 +1,6 @@
 {
   "name": "@funcmatic/funcmatic",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Funcmatic Lambda JS Framework",
   "main": "index.js",
   "scripts": {
