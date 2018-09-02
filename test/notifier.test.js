@@ -1,23 +1,29 @@
-var Funcmatic = require('../lib/core')
+var initFuncmatic = require('../lib/core')
 var NotifierPlugin = require('../plugins/notifier')
 
 describe('Request', () => {
+  var funcmatic = null
+  var plugin = null
+
+  beforeEach(async () => {
+    funcmatic = initFuncmatic()
+    plugin = new NotifierPlugin()
+    funcmatic.use(plugin, { })
+  })
+
   it ("should throw a user error and call the notifier plugin", async () => {
-    await Funcmatic.use(NotifierPlugin, { })
-    var event = { path: '/', method: 'GET', headers: { } }
+    var event = { }
     var context = { }
-    var handler = Funcmatic.wrap(async (event, context, { notify }) => {
-      throw Error("User Error")
-    })
     var error = null
-    // this should throw 
     try {
-      var ret = await handler(event, context)  
+      await funcmatic.invoke(event, context, async (event, context, { notify }) => {
+        throw Error("User Error")
+      })  
     } catch (err) {
       error = err
     }
     expect(error).toBeTruthy()
     expect(error.message).toBe("User Error")
-    expect(NotifierPlugin.err).toMatchObject(error)
+    expect(plugin.err).toMatchObject(error)
   })
 })

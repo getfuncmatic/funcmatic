@@ -3,6 +3,8 @@ const util = require('../lib/util')
 class LogPlugin {
   constructor() {
     this.name = 'log'
+    this.buffer = [ ]
+    this.flushed = null
   }
   
   async start(conf) {
@@ -14,12 +16,20 @@ class LogPlugin {
     return { service }
   }
   
+  async end() {
+    // we flush the logs
+    await util.wait(100)
+    this.flushed = this.buffer
+    this.buffer = [ ]
+  }
+
   log(s) {
     console.log(`${this.name}: ${s}`)
+    this.buffer.push(s)
   }
 }
 
-module.exports = new LogPlugin()
+module.exports = LogPlugin
 
 // class A {
 //   constructor(fooVal) {

@@ -11,7 +11,7 @@ class AuthPlugin {
   }
   
   async request(event, context) {
-    var claims = await this.auth(event.headers['Authorization'])
+    var claims = await this.auth(event.headers && event.headers['Authorization'])
     //context['auth'] = { claims }
     var service = { claims }
     //return { event, context }
@@ -28,7 +28,6 @@ class AuthPlugin {
     }
     return null
   }
-  
 }
 
-module.exports = new AuthPlugin()
+module.exports = AuthPlugin

@@ -25,7 +25,7 @@ class NotifierPlugin {
   }
 }
 
-module.exports = new NotifierPlugin()
+module.exports = NotifierPlugin
 
 // class A {
 //   constructor(fooVal) {

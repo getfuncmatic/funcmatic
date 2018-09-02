@@ -44,4 +44,4 @@ async function fetchParams(conf) {
   }
 }
 
-module.exports = new EnvPlugin()
+module.exports = EnvPlugin
