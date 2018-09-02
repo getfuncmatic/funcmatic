@@ -1,4 +1,4 @@
-var initFuncmatic = require('../lib/core').create
+var initFuncmatic = require('../lib/funcmatic').create
 var AuthPlugin = require('../plugins/auth')
 
 describe('Request', () => {

@@ -24,7 +24,7 @@ class LogPlugin {
   }
 
   log(s) {
-    console.log(`${this.name}: ${s}`)
+    //console.log(`${this.name}: ${s}`)
     this.buffer.push(s)
   }
 }
