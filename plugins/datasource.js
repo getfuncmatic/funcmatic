@@ -27,6 +27,11 @@ class DatasourcePlugin {
     }
   }
 
+  // used for testing
+  async teardown() {
+
+  }
+
   async connectToDatasource() {
     if (this.cache && this.cachedConnection && this.cachedConnection.connected) {
       return this.cachedConnection
@@ -42,4 +47,4 @@ class DatasourcePlugin {
   }
 }
 
-module.exports = new DatasourcePlugin()
+module.exports = DatasourcePlugin

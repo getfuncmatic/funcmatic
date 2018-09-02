@@ -1,0 +1,4 @@
+TODO
+
+* implement teardown()
+* update tests to use the new funcmatic object

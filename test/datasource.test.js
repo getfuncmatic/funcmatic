@@ -1,44 +1,49 @@
-var Funcmatic = require('../lib/core')
+var initFuncmatic = require('../lib/core')
 var DatasourcePlugin = require('../plugins/datasource')
 
-const app = require('@funcmatic/lambda-router')
-
-app.get('/', async (event, context, { datasource }) => {
-  if (context.error) throw new Error("my error message")
-  return { statusCode: 200, conn: datasource.conn }
-}) 
-
 describe('Request', () => {
-  it ('should set and cache a connection in the context', async () => {
-    Funcmatic.clear()
-    await Funcmatic.use(DatasourcePlugin, { cache: true })
-    var event = { path: '/', method: 'GET', headers: { } }
-    var context = { }
-    await Funcmatic.wrap(app.handler())(event, context)
-    expect(DatasourcePlugin.cachedConnection).toMatchObject({
-      connected: true
-    })
+  var funcmatic = null
+  beforeEach(async () => {
+    funcmatic = initFuncmatic()
+    funcmatic.use(new DatasourcePlugin(), { cache: false })
   })
-  it ('should connect on request and not cache i.e. disconnect at response', async () => {
-    Funcmatic.clear()
-    await Funcmatic.use(DatasourcePlugin, { cache: false })
-    var event = { path: '/', method: 'GET', headers: { } }
+  afterEach(async () => {
+    await funcmatic.teardown() 
+  })
+  it ('should set and cache a connection in the context', async () => {
+    funcmatic.clear()
+    funcmatic.use(new DatasourcePlugin(), { cache: true })
+    var event = { }
     var context = { }
-    var ret = await Funcmatic.wrap(app.handler())(event, context)
-    expect(ret).toMatchObject({
-      conn: {
-        connected: true
-      }
+    await funcmatic.invoke(event, context, async (event, context, { datasource }) => {
+      expect(datasource.conn.connected).toBeTruthy()
+      return { }
     })
-    expect(DatasourcePlugin.cachedConnection).toBeFalsy()
+    var plugin = funcmatic.getPlugin('datasource')
+    expect(plugin.cachedConnection && plugin.cachedConnection.connected).toBeTruthy()
+  })
+  it ('should connect on request and disconnect at response', async () => {
+    var event = { }
+    var context = { }
+    await funcmatic.invoke(event, context, async (event, context, { datasource }) => {
+      expect(datasource.conn.connected).toBeTruthy()
+      return { }
+    })
+    var plugin = funcmatic.getPlugin('datasource')
+    expect(plugin.cachedConnection).toBeFalsy()
   })
   it ('should terminate the uncached connection on error', async () => {
-    Funcmatic.clear()
-    await Funcmatic.use(DatasourcePlugin, { cache: false })
-    var event = { path: '/', method: 'GET', headers: { } }
-    var context = { error: true }
-    var ret = await Funcmatic.wrap(app.handler())(event, context)
-    expect(ret.message).toBe("my error message")
-    expect(DatasourcePlugin.cachedConnection).toBeFalsy()
+    var event = { }
+    var context = { }
+    try { 
+      await funcmatic.invoke(event, context, async (event, context, { datasource }) => {
+        expect(datasource.conn.connected).toBeTruthy()
+        throw new Error("my error message")
+      })
+    } catch (err) {
+      expect(err.message).toBe("my error message")
+    }
+    var plugin = funcmatic.getPlugin('datasource')
+    expect(plugin.cachedConnection).toBeFalsy()
   })
 })

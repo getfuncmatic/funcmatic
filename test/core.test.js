@@ -1,36 +1,47 @@
-var Funcmatic = require('../lib/core')
+var initFuncmatic = require('../lib/core')
 var MyPlugin = require('../plugins/testplugin')
 
-var handler = async (event, context) => {
-  return { statusCode: 200 }
-}
-
-//expect(houseForSale).toMatchObject(desiredHouse);
 describe('Use', () => {
   it ('should install a plugin', async () => {
-    Funcmatic.use(MyPlugin, { hello: "world" })
-    var hooks = Funcmatic.installedHooks()
+    var funcmatic = initFuncmatic()
+    funcmatic.use(new MyPlugin(), { hello: "world" })
+    var hooks = funcmatic.installedHooks()
     expect(hooks.request.length).toBe(1)
     expect(hooks.request[0].name).toBe("myplugin")
   })
 }) 
 
 describe('Event and Context', () => {
+  var funcmatic = null
+  beforeEach(async () => {
+    funcmatic = initFuncmatic()
+    funcmatic.use(new MyPlugin(), { })
+  })
+  afterEach(async () => {
+    funcmatic.teardown()
+  })
   it ('should mutate the passed in event and context', async () => {
-    var event = { hello: 'world' }
-    var context = { foo: 'bar' }
-    
+    var event = { }
+    var context = { }
+    await funcmatic.invoke(event, context, async (event, context, { myplugin }) => {
+      return { }
+    })
+    expect(event).toMatchObject({
+      myplugin: true
+    })
+    expect(context).toMatchObject({
+      myplugin: true
+    })
   })
   it ('should freeze originalEvent', async () => {
     var event = { hello: 'world' }
     var context = { foo: 'bar' }
-    var handler = Funcmatic.wrap(async (event, context) => {
+    await funcmatic.invoke(event, context, async (event, context) => {
       event.hello = 'something'
       // below should no-op because originalEvent is frozen
       context.originalEvent.hello = 'something'
-      return { statusCode: 200 }
+      return { }
     })
-    var ret = await handler(event, context)
     expect(event).toMatchObject({
       hello: 'something'
     })
@@ -41,29 +52,39 @@ describe('Event and Context', () => {
 })
 
 describe('Wrap', () => {
+  var funcmatic = null
+  var handler = null
+  beforeEach(async () => {
+    funcmatic = initFuncmatic()
+    funcmatic.use(new MyPlugin(), { })
+    handler = funcmatic.wrap(async (event, context, { myplugin }) => {
+      return { statusCode: 200 }
+    })
+  })
   it ('should invoke the handler', async () => {
-    var event = { path: '/', method: 'GET' }
+    var event = { }
     var context = { }
-    var ret = await Funcmatic.wrap(handler)(event, context)
+    var ret = await handler(event, context)
     expect(ret).toMatchObject({
       statusCode: 200
     })
   })
   it ('should call the start and request hooks when executing', async () => {
-    Funcmatic.clear()
-    MyPlugin.count = 0
-    Funcmatic.use(MyPlugin, { hello: "world" })
     var event = { path: '/', method: 'GET' }
     var context = { }
-    var ret = await Funcmatic.wrap(handler)(event, context)
-    expect(ret).toMatchObject({
-      myplugin: true
+    var coldret = await handler(event, context)
+    expect(coldret).toMatchObject({
+      myplugin: true,
+      startcount: 1,
+      requestcount: 1
     })
-    // call start hook during coldstart
-    expect(MyPlugin.count).toBe(1)
-    
+
     // should NOT call start hook on non coldstart
-    var ret = await Funcmatic.wrap(handler)(event, context)
-    expect(MyPlugin.count).toBe(1)
+    var warmret = await handler(event, context)
+    expect(warmret).toMatchObject({
+      myplugin: true,
+      startcount: 1,
+      requestcount: 2
+    })
   })
 })
