@@ -1,4 +1,4 @@
-var initFuncmatic = require('../lib/core')
+var initFuncmatic = require('../lib/core').create
 var NotifierPlugin = require('../plugins/notifier')
 
 describe('Request', () => {

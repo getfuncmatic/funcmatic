@@ -1,4 +1,4 @@
-var initFuncmatic = require('../lib/core')
+var initFuncmatic = require('../lib/core').create
 var EnvPlugin = require('../plugins/env')
 
 describe('Request', () => {

@@ -1,4 +1,4 @@
-var initFuncmatic = require('../lib/core')
+var initFuncmatic = require('../lib/core').create
 var LogPlugin = require('../plugins/log')
 
 const app = require('@funcmatic/lambda-router')
