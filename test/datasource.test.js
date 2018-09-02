@@ -4,6 +4,7 @@ var DatasourcePlugin = require('../plugins/datasource')
 const app = require('@funcmatic/lambda-router')
 
 app.get('/', async (event, context, { datasource }) => {
+  if (context.error) throw new Error("my error message")
   return { statusCode: 200, conn: datasource.conn }
 }) 
 
@@ -30,6 +31,14 @@ describe('Request', () => {
       }
     })
     expect(DatasourcePlugin.cachedConnection).toBeFalsy()
-    
+  })
+  it ('should terminate the uncached connection on error', async () => {
+    Funcmatic.clear()
+    await Funcmatic.use(DatasourcePlugin, { cache: false })
+    var event = { path: '/', method: 'GET', headers: { } }
+    var context = { error: true }
+    var ret = await Funcmatic.wrap(app.handler())(event, context)
+    expect(ret.message).toBe("my error message")
+    expect(DatasourcePlugin.cachedConnection).toBeFalsy()
   })
 })

@@ -20,13 +20,13 @@ class DatasourcePlugin {
     return { service }
   }
   
-  async response(event, context, res) {
+  // gets called if function returns or if errors out
+  async end() {
     if (!this.cache) {
       await this.disconnectFromDatasource()
-      this.cachedConnection = null
     }
   }
-  
+
   async connectToDatasource() {
     if (this.cache && this.cachedConnection && this.cachedConnection.connected) {
       return this.cachedConnection
