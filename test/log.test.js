@@ -1,14 +1,6 @@
 var initFuncmatic = require('../lib/funcmatic').create
 var LogPlugin = require('../plugins/log')
 
-const app = require('@funcmatic/lambda-router')
-
-app.get('/', async (event, context, { log }) => {
-  if (!log) throw Error("Did not set 'log' service")
-  log("mytest")
-  return { statusCode: 200 }
-})  
-
 describe('Request', () => {
   var funcmatic = null
   var plugin = null
