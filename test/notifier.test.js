@@ -1,14 +1,15 @@
-var initFuncmatic = require('../lib/funcmatic').create
+var func = require('../lib/funcmatic')
 var NotifierPlugin = require('../plugins/notifier')
+
+func.use(NotifierPlugin)
 
 describe('Request', () => {
   var funcmatic = null
   var plugin = null
 
   beforeEach(async () => {
-    funcmatic = initFuncmatic()
-    plugin = new NotifierPlugin()
-    funcmatic.use(plugin, { })
+    funcmatic = func.clone()
+    plugin = funcmatic.getPlugin('notify')
   })
 
   it ("should throw a user error and call the notifier plugin", async () => {

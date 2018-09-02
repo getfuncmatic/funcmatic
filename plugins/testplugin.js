@@ -40,8 +40,11 @@ class MyPlugin {
     this.inc('error')
   }
 
-  async end() {
+  async end(options) {
     this.inc('end')
+    if (options && options.teardown) {
+      this.teardown = true
+    }
   }
 }
 

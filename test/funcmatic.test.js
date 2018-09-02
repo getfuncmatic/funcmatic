@@ -4,7 +4,7 @@ var MyPlugin = require('../plugins/testplugin')
 describe('Use', () => {
   it ('should install a plugin', async () => {
     var funcmatic = initFuncmatic()
-    funcmatic.use(new MyPlugin(), { hello: "world" })
+    funcmatic.use(MyPlugin, { hello: "world" })
     var plugin = funcmatic.getPlugin('myplugin')
     expect(plugin).toMatchObject({
       name: 'myplugin'
@@ -20,13 +20,46 @@ describe('Use', () => {
       }
     })
   })
+  it ('should clone an instance', async () => {
+    var funcmatic = initFuncmatic()
+    funcmatic.use(MyPlugin, { hello: "world" })
+    var funcmaticClone = funcmatic.clone()
+    var plugin = funcmaticClone.getPlugin('myplugin')
+    expect(plugin).toMatchObject({
+      name: 'myplugin'
+    })
+    var hooks = funcmaticClone.installedHooks()
+    expect(hooks.start.length).toBe(1)
+    expect(hooks.start[0]).toMatchObject({
+      plugin: {
+        name: "myplugin"
+      },
+      config: {
+        hello: "world"
+      }
+    })
+  })
+  it ('should call end on a teardown', async () => {
+    var funcmatic = initFuncmatic() 
+    funcmatic.use(MyPlugin)
+    await funcmatic.teardown()
+    var plugin = funcmatic.getPlugin('myplugin')
+    expect(plugin.counts).toMatchObject({
+      start: 0,
+      request: 0,
+      response: 0,
+      error: 0,
+      end: 1
+    })
+    expect(plugin.teardown).toBeTruthy()
+  })
 }) 
 
 describe('Event and Context', () => {
   var funcmatic = null
   beforeEach(async () => {
     funcmatic = initFuncmatic()
-    funcmatic.use(new MyPlugin(), { })
+    funcmatic.use(MyPlugin)
   })
   afterEach(async () => {
     funcmatic.teardown()
@@ -67,7 +100,7 @@ describe('Wrap', () => {
   var handler = null
   beforeEach(async () => {
     funcmatic = initFuncmatic()
-    funcmatic.use(new MyPlugin(), { })
+    funcmatic.use(MyPlugin, { })
     handler = funcmatic.wrap(async (event, context, { myplugin }) => {
       if (event.error) {
         throw new Error("user handler error")

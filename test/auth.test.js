@@ -1,14 +1,14 @@
-var initFuncmatic = require('../lib/funcmatic').create
+var funcmatic = require('../lib/funcmatic')
 var AuthPlugin = require('../plugins/auth')
 
+funcmatic.use(AuthPlugin, { })
+
 describe('Request', () => {
-  var funcmatic = null
   var plugin = null
 
   beforeEach(async () => {
-    funcmatic = initFuncmatic()
-    plugin = new AuthPlugin()
-    funcmatic.use(plugin, { })
+    funcmatic = funcmatic.clone()
+    plugin = funcmatic.getPlugin('auth')
   })
 
   it ('should decode JWT token if provided', async () => {

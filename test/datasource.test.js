@@ -1,18 +1,18 @@
-var initFuncmatic = require('../lib/funcmatic').create
+var func = require('../lib/funcmatic')
 var DatasourcePlugin = require('../plugins/datasource')
+func.use(DatasourcePlugin, { cache: false })
 
 describe('Request', () => {
   var funcmatic = null
   beforeEach(async () => {
-    funcmatic = initFuncmatic()
-    funcmatic.use(new DatasourcePlugin(), { cache: false })
+    funcmatic = func.clone()
   })
   afterEach(async () => {
     await funcmatic.teardown() 
   })
   it ('should set and cache a connection in the context', async () => {
     funcmatic.clear()
-    funcmatic.use(new DatasourcePlugin(), { cache: true })
+    funcmatic.use(DatasourcePlugin, { cache: true })
     var event = { }
     var context = { }
     await funcmatic.invoke(event, context, async (event, context, { datasource }) => {

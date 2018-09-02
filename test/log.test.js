@@ -1,14 +1,14 @@
-var initFuncmatic = require('../lib/funcmatic').create
+var func = require('../lib/funcmatic')
 var LogPlugin = require('../plugins/log')
+
+func.use(LogPlugin, { })
 
 describe('Request', () => {
   var funcmatic = null
   var plugin = null
-
   beforeEach(async () => {
-    funcmatic = initFuncmatic()
-    plugin = new LogPlugin()
-    funcmatic.use(plugin, { })
+    funcmatic = func.clone()
+    plugin = funcmatic.getPlugin('log')
   })
 
   it ("should set service 'log' and pass it into the user function", async () => {
