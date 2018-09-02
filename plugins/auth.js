@@ -32,20 +32,3 @@ class AuthPlugin {
 }
 
 module.exports = new AuthPlugin()
-
-// class A {
-//   constructor(fooVal) {
-//     this.foo = fooVal;
-//   }
-// }
-
-// class AFactory {
-//   static async create() {
-//     return new A(await Promise.resolve('fooval'));
-//   }
-// }
-
-// (async function generate() {
-//   const aObj = await AFactory.create();
-//   console.log(aObj);
-// })()
