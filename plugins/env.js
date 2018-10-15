@@ -7,15 +7,22 @@ class EnvPlugin {
   }
   
   // hook
-  async start(conf) {
+  // conf is the user specified conf provided in 'Funcmatic.use'
+  // env is the global environment similar to process.env
+  async start(conf, env) {
     this.name = conf.name || this.name
     var data = await fetchParams(conf)
-    var env = { }
     for (var param of data.Parameters) {
-      this.env[param.Name] = param.Value
-      process.env[param.Name] = param.Value
+      // this is like setting in process.env 
+      // so that 'start' methods of future plugins
+      // down the line will be able to access them (env.REDIS_HOST)
+      env[param.Name] = param.Value 
+      // update this.env
+      this.env[param.Name] = param.Value 
     }
-    return this.env
+    // no return, all you can do configure yourself
+    // or mutate the 'env' param which is funcmatic's equivalent of process.env
+    // return this.env
   }
   
   async request(event, context) {
