@@ -55,6 +55,48 @@ describe('Use', () => {
   })
 }) 
 
+describe('Cold Start and Expiration', () => {
+  describe('Event and Context', () => {
+    var funcmatic = null
+    var plugin = null
+    beforeEach(async () => {
+      funcmatic = initFuncmatic()
+      funcmatic.use(MyPlugin)
+      plugin = funcmatic.getPlugin('myplugin')
+    })
+    afterEach(async () => {
+      funcmatic.teardown()
+    })
+    it ('should initially not have expiration set', async () => {
+      expect(funcmatic.expiry).toBe(0)
+    })
+    it ('should not recall start if has not expired', async () => {
+      funcmatic.setExpiration(10) // 10 seconds
+      // initial call is cold start
+      await funcmatic.invoke({ }, { }, async (event, context, { myplugin }) => { })
+      expect(funcmatic.started).toBe(true)
+      expect(plugin.counts).toMatchObject({
+        start: 1
+      })
+      var expiresAt = funcmatic.expiresAt
+      // call happens before expiration is not cold start
+      await funcmatic.invoke({ }, { }, async (event, context, { myplugin }) => { })
+      expect(plugin.counts).toMatchObject({
+        start: 1
+      })
+      await sleep(11 * 1000)
+      // call happens after expiration is treated as cold start
+      await funcmatic.invoke({ }, { }, async (event, context, { myplugin }) => { })
+      expect(plugin.counts).toMatchObject({
+        start: 2
+      })
+      // should set a new expiration
+      expect(funcmatic.expiresAt >= expiresAt).toBe(true)
+      expect((funcmatic.expiresAt - expiresAt) >= 10*100)
+    }, 60*1000)
+  })
+})
+
 describe('Event and Context', () => {
   var funcmatic = null
   beforeEach(async () => {
@@ -189,3 +231,12 @@ describe('Wrap', () => {
     })
   })
 })
+
+ 
+async function sleep(ms, data) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(data)
+    }, ms)
+  })
+}
