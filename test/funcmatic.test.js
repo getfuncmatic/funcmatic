@@ -93,6 +93,20 @@ describe('Event and Context', () => {
       hello: 'world'
     })
   })
+  it ('should load API Gateway stage variables', async () => {
+    expect(funcmatic.exportStageVariables).toBe(true)
+    var event = { 
+      stageVariables: {
+        HELLO: 'world'
+      }
+    }
+    var context = { }
+    await funcmatic.invoke(event, context, async (event, context) => {
+      expect(process.env).toMatchObject({
+        'HELLO': 'world'
+      })
+    })
+  })
 })
 
 describe('Wrap', () => {
